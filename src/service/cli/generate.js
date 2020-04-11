@@ -56,31 +56,48 @@ const SumRestrict = {
 };
 
 const getPictureFileName = (number) => `item${printNumWithLead0(number)}.jpg`;
+const generatePicture = () => getPictureFileName(getRandomInt(PictureRestrict.min, PictureRestrict.max));
 
-const generateOffers = (count) => (
-  Array(count).fill({}).map(() => ({
-    category: [CATEGORIES[getRandomInt(0, CATEGORIES.length - 1)]],
-    description: shuffle(SENTENCES).slice(1, 5).join(` `),
-    picture: getPictureFileName(getRandomInt(PictureRestrict.min, PictureRestrict.max)),
-    title: TITLES[getRandomInt(0, TITLES.length - 1)],
-    type: Object.keys(OfferType)[Math.floor(Math.random() * Object.keys(OfferType).length)],
-    sum: getRandomInt(SumRestrict.min, SumRestrict.max),
-  }))
-);
+const generateCategory = () => CATEGORIES[getRandomInt(0, CATEGORIES.length - 1)];
+const generateDescription = () => shuffle(SENTENCES).slice(1, 5).join(` `);
+const generateTitle = () => TITLES[getRandomInt(0, TITLES.length - 1)];
+const generateType = () => Object.keys(OfferType)[Math.floor(Math.random() * Object.keys(OfferType).length)];
+
+const generateOffers = (count) => {
+  let offersArray = [];
+
+  for (let i = 0; i < count; i++) {
+    offersArray.push({
+      category: [generateCategory()],
+      description: generateDescription(),
+      picture: generatePicture(),
+      title: generateTitle(),
+      type: generateType(),
+      sum: getRandomInt(SumRestrict.min, SumRestrict.max),
+    });
+  }
+
+  return offersArray;
+};
+
+const writeToFile = (content) => {
+  fs.writeFile(FILE_NAME, content, (err) => {
+    if (err) {
+      return console.error(`Can't write data to file...`);
+    }
+
+    return console.info(`Operation success. File created.`);
+  });
+};
 
 module.exports = {
   name: `--generate`,
   run(args) {
     const [count] = args;
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
-    const content = JSON.stringify(generateOffers(countOffer));
+    const offers = generateOffers(countOffer);
+    const content = JSON.stringify(offers);
 
-    fs.writeFile(FILE_NAME, content, (err) => {
-      if (err) {
-        return console.error(`Can't write data to file...`);
-      }
-
-      return console.info(`Operation success. File created.`);
-    });
+    writeToFile(content);
   }
 };
