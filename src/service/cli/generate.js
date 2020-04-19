@@ -1,4 +1,5 @@
 'use strict';
+const chalk = require(`chalk`);
 const {
   getRandomInt,
   shuffle,
@@ -81,23 +82,23 @@ const generateOffers = (count) => {
 };
 
 const writeToFile = (content) => {
-  fs.writeFile(FILE_NAME, content, (err) => {
-    if (err) {
-      return console.error(`Can't write data to file...`);
-    }
-
-    return console.info(`Operation success. File created.`);
+  fs.writeFile(FILE_NAME, content, () => {
+    console.info(chalk.green(`Operation success. File created.`));
   });
 };
 
 module.exports = {
   name: `--generate`,
-  run(args) {
+  async run(args) {
     const [count] = args;
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
     const offers = generateOffers(countOffer);
     const content = JSON.stringify(offers);
 
-    writeToFile(content);
+    try {
+      await writeToFile(content);
+    } catch (err) {
+      console.error(chalk.red(`Can't write data to file...`));
+    }
   }
 };
