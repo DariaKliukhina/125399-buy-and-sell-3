@@ -5,7 +5,7 @@ const {
   shuffle,
   printNumWithLead0
 } = require(`../../utils`);
-const fs = require(`fs`);
+const fs = require(`fs`).promises;
 
 const DEFAULT_COUNT = 1;
 const FILE_NAME = `mocks.json`;
@@ -81,12 +81,6 @@ const generateOffers = (count) => {
   return offersArray;
 };
 
-const writeToFile = (content) => {
-  fs.writeFile(FILE_NAME, content, () => {
-    console.info(chalk.green(`Operation success. File created.`));
-  });
-};
-
 module.exports = {
   name: `--generate`,
   async run(args) {
@@ -96,7 +90,8 @@ module.exports = {
     const content = JSON.stringify(offers);
 
     try {
-      await writeToFile(content);
+      await fs.writeFile(FILE_NAME, content);
+      console.log(chalk.green(`Operation success. File created.`));
     } catch (err) {
       console.error(chalk.red(`Can't write data to file...`));
     }
