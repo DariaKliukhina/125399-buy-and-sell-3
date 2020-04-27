@@ -29,12 +29,12 @@ const SumRestrict = {
   max: 100000,
 };
 
-const readContent = async (filePath, object, key) => {
+const readContent = async (filePath) => {
   try {
     const content = await fs.readFile(filePath, `utf8`);
-    object[key] = content.split(`\n`);
-    return object;
+    return content.split(`\n`);
   } catch (err) {
+    console.error(chalk.red(err));
     throw err;
   }
 };
@@ -66,25 +66,32 @@ const generateOffers = (count, titles, categories, sentences) => {
 
 module.exports = {
   name: `--generate`,
-  run(args) {
+  async run(args) {
 
-    const [count] = args;
-    const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
+    try {
+      const [count] = args;
+      const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
 
-    const data = {};
-    Promise
-      .all([
-        readContent(FILE_SENTENCES_PATH, data, `sentences`),
-        readContent(FILE_TITLES_PATH, data, `titles`),
-        readContent(FILE_CATEGORIES_PATH, data, `categories`)
-      ]).then(() => {
-        const offers = generateOffers(countOffer, data.titles, data.categories, data.sentences);
-        const content = JSON.stringify(offers);
-        fs.writeFile(FILE_NAME, content);
-      }).then(() => {
-        console.log(chalk.green(`Operation success. File created.`));
-      }).catch((err) => {
-        console.error(chalk.red(`Can't write data to file with error: ${err}`));
-      });
+      const readSentences = readContent(FILE_SENTENCES_PATH);
+      const readTitles = readContent(FILE_TITLES_PATH);
+      const readCategories = readContent(FILE_CATEGORIES_PATH);
+
+      const [sentences, titles, categories] = await Promise
+        .all([
+          readSentences,
+          readTitles,
+          readCategories
+        ]);
+
+      const offers = generateOffers(countOffer, titles, categories, sentences);
+      const content = JSON.stringify(offers);
+
+      await fs.writeFile(FILE_NAME, content);
+      console.log(chalk.green(`Operation success. File created.`));
+    } catch (err) {
+      console.error(chalk.red(`Can't write data to file. ${err}`));
+    }
   }
 };
+
+
