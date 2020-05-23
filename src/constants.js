@@ -1,5 +1,7 @@
 'use strict';
 
+module.exports.FILE_NAME = `mocks.json`;
+
 module.exports.DEFAULT_COMMAND = `--help`;
 
 module.exports.USER_ARGV_INDEX = 2;
