@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports.FILE_NAME = `mocks.json`;
+module.exports.FILENAME = `mocks.json`;
 
 module.exports.DEFAULT_COMMAND = `--help`;
 
