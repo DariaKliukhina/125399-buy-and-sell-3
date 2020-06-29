@@ -2,9 +2,12 @@
 
 const {
   HttpCode,
+  API_PREFIX
 } = require(`../../constants`);
 
-const offersRouter = require(`./routes/offers.routes`);
+const routes = require(`../api`);
+
+app.use(API_PREFIX, routes);
 
 const chalk = require(`chalk`);
 const express = require(`express`);
@@ -13,8 +16,6 @@ const DEFAULT_PORT = 3000;
 
 const app = express();
 app.use(express.json());
-
-app.use(`/offers`, offersRouter);
 
 app.use((req, res) => res
   .status(HttpCode.NOT_FOUND)
