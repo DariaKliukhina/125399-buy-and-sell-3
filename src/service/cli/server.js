@@ -6,15 +6,15 @@ const {
 } = require(`../../constants`);
 
 const routes = require(`../api`);
-
-app.use(API_PREFIX, routes);
-
-const chalk = require(`chalk`);
 const express = require(`express`);
+const chalk = require(`chalk`);
+
+const app = express();
 
 const DEFAULT_PORT = 3000;
 
-const app = express();
+app.use(API_PREFIX, routes);
+
 app.use(express.json());
 
 app.use((req, res) => res

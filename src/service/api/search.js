@@ -11,6 +11,6 @@ module.exports = (apiRouter, service) => {
   searchRouter.get(`/`, (req, res) => {
     const {query} = req.query;
 
-    res.status(HttpCode.OK).json(service.search(query));
+    res.status(HttpCode.OK).json(service.findAll(query));
   });
 };

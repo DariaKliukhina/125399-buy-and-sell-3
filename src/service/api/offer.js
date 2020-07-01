@@ -5,7 +5,8 @@ const {HttpCode} = require(`../../constants`);
 
 const {
   offerValidator,
-  commentValidator
+  commentValidator,
+  offerExist
 } = require(`../middlewares`);
 
 const offersRouter = new express.Router();

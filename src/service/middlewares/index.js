@@ -2,10 +2,10 @@
 
 const offerValidator = require(`./offerValidator`);
 const commentValidator = require(`./commentValidator`);
-const offerExists = require(`./offerExists`);
+const offerExist = require(`./offerExist`);
 
 module.exports = {
   offerValidator,
   commentValidator,
-  offerExists
+  offerExist
 };
