@@ -5,35 +5,46 @@ const {
   API_PREFIX
 } = require(`../../constants`);
 
-const routes = require(`../api`);
+const getMockData = require(`../lib/get-mock-data`);
+
+const createApi = require(`../api`);
 const express = require(`express`);
 const chalk = require(`chalk`);
-
-const app = express();
-
 const DEFAULT_PORT = 3000;
 
-app.use(API_PREFIX, routes);
+const createApp = async (data) => {
 
-app.use(express.json());
+  const app = express();
+  const apiRoutes = await createApi(data);
 
-app.use((req, res) => res
-  .status(HttpCode.NOT_FOUND)
-  .send(`Not found`));
+  app.use(API_PREFIX, apiRoutes);
+
+  app.use(express.json());
+
+  app.use((req, res) => res
+    .status(HttpCode.NOT_FOUND)
+    .send(`Not found`));
+
+  return app;
+};
+
+const run = async (args) => {
+  const [customPort] = args;
+  const port = Number.parseInt(customPort, 10) || DEFAULT_PORT;
+  const mockData = await getMockData();
+  const app = await createApp(mockData);
+
+  app.listen(port, (err) => {
+    if (err) {
+      return console.error(`Ошибка при создании сервера`, err);
+    }
+
+    return console.info(chalk.green(`Ожидаю соединений на ${port}`));
+  });
+};
 
 module.exports = {
   name: `--server`,
-  run(args) {
-    const [customPort] = args;
-    const port = Number.parseInt(customPort, 10) || DEFAULT_PORT;
-
-    app.listen(port, (err) => {
-      if (err) {
-        return console.error(`Ошибка при создании сервера`, err);
-      }
-
-      return console.info(chalk.green(`Ожидаю соединений на ${port}`));
-
-    });
-  }
+  createApp,
+  run
 };

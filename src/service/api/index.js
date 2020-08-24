@@ -5,8 +5,6 @@ const category = require(`../api/category`);
 const offer = require(`../api/offer`);
 const search = require(`../api/search`);
 
-const getMockData = require(`../lib/get-mock-data`);
-
 const {
   CategoryService,
   SearchService,
@@ -14,14 +12,14 @@ const {
   CommentService,
 } = require(`../data-service`);
 
-const app = new Router();
+const createApi = async (data) => {
+  const app = new Router();
 
-(async () => {
-  const mockData = await getMockData();
+  category(app, new CategoryService(data));
+  search(app, new SearchService(data));
+  offer(app, new OfferService(data), new CommentService());
 
-  category(app, new CategoryService(mockData));
-  search(app, new SearchService(mockData));
-  offer(app, new OfferService(mockData), new CommentService());
-})();
+  return app;
+};
 
-module.exports = app;
+module.exports = createApi;
